@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         dob: dobPicker.getValue() || "",
         passport: passportInput.value.trim(),
       });
+      await renderAuthSlot(); // refresh header name after a save
       showToast("Account details saved.", "profile-saved-toast");
     } catch (err) {
       showToast(err.message, "profile-save-error-toast");
