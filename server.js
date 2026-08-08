@@ -22,9 +22,9 @@ const USERS = [
     password: "Test1234!",
     name: "Alex Rivera",
     status: "active",
-    phone: "",
-    dob: "",
-    passport: "",
+    phone: "(555) 010-2020",
+    dob: "1990-05-14",
+    passport: "X1234567",
   },
   {
     email: "locked@aerolane.dev",
@@ -192,11 +192,9 @@ app.post("/api/login", (req, res) => {
       return res.status(401).json({ error: "Incorrect email or password." });
     }
     if (user.status === "locked") {
-      return res
-        .status(423)
-        .json({
-          error: "This account is locked. Contact support to regain access.",
-        });
+      return res.status(423).json({
+        error: "This account is locked. Contact support to regain access.",
+      });
     }
 
     const token = crypto.randomBytes(24).toString("hex");
@@ -362,11 +360,9 @@ app.get("/api/flights", (req, res) => {
 
   setTimeout(() => {
     if (simulateError) {
-      return res
-        .status(500)
-        .json({
-          error: "Search service is temporarily unavailable. Please try again.",
-        });
+      return res.status(500).json({
+        error: "Search service is temporarily unavailable. Please try again.",
+      });
     }
     if (!from || !to || !date) {
       return res
@@ -456,11 +452,9 @@ app.post("/api/bookings/:code/checkin", (req, res) => {
   const booking = bookings.find((b) => b.confirmationCode === req.params.code);
   if (!booking) return res.status(404).json({ error: "Booking not found." });
   if (booking.status === "cancelled") {
-    return res
-      .status(409)
-      .json({
-        error: "This booking has been cancelled and cannot be checked in.",
-      });
+    return res.status(409).json({
+      error: "This booking has been cancelled and cannot be checked in.",
+    });
   }
   if (booking.status === "checked-in") {
     return res
