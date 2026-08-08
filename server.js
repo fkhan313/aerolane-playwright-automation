@@ -1,0 +1,503 @@
+const express = require("express");
+const path = require("path");
+const crypto = require("crypto");
+const airports = require("./data/airports.json");
+
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// ============================================================
+// Auth (cookie-based sessions, deliberately hand-rolled so the
+// whole auth story is visible in one file for a demo/portfolio site)
+// ============================================================
+const SESSION_COOKIE = "aerolane_session";
+const SESSION_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+const sessions = new Map(); // token -> { email, name, expiresAt }
+const bookingsByEmail = new Map(); // email -> array of booking objects
+
+const USERS = [
+  {
+    email: "test@aerolane.dev",
+    password: "Test1234!",
+    name: "Alex Rivera",
+    status: "active",
+    phone: "",
+    dob: "",
+    passport: "",
+  },
+  {
+    email: "locked@aerolane.dev",
+    password: "Test1234!",
+    name: "Locked Account",
+    status: "locked",
+    phone: "",
+    dob: "",
+    passport: "",
+  },
+];
+
+function findUserByEmail(email) {
+  return USERS.find(
+    (u) => u.email.toLowerCase() === String(email || "").toLowerCase(),
+  );
+}
+
+function seedBookings() {
+  const seedFlight = (overrides) => ({
+    airline: "SkyBridge Air",
+    airlineCode: "SB",
+    flightNumber: "SB482",
+    from: "DTW",
+    to: "JFK",
+    date: "2026-09-14",
+    departTime: "08:15",
+    arriveTime: "10:02",
+    durationMinutes: 107,
+    stops: 0,
+    stopCities: [],
+    price: 214,
+    cabin: "economy",
+    seatsLeft: 6,
+    baggage: { carryOn: true, checked: 0 },
+    gate: "C12",
+    ...overrides,
+  });
+
+  bookingsByEmail.set("test@aerolane.dev", [
+    {
+      confirmationCode: "ALSEED1",
+      bookedAt: "2026-07-02T14:20:00.000Z",
+      bookedBy: "test@aerolane.dev",
+      status: "confirmed",
+      outbound: seedFlight({
+        from: "DTW",
+        to: "JFK",
+        date: "2026-09-14",
+        flightNumber: "SB482",
+      }),
+      returnFlight: seedFlight({
+        from: "JFK",
+        to: "DTW",
+        date: "2026-09-21",
+        flightNumber: "SB491",
+        departTime: "17:40",
+        arriveTime: "19:26",
+      }),
+      passengers: [{ seat: 1, name: "Alex Rivera", passport: "X1234567" }],
+      contact: { email: "test@aerolane.dev", phone: "(555) 010-2020" },
+      total: 428,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+    {
+      confirmationCode: "ALSEED2",
+      bookedAt: "2026-05-11T09:05:00.000Z",
+      bookedBy: "test@aerolane.dev",
+      status: "checked-in",
+      outbound: seedFlight({
+        from: "SFO",
+        to: "ORD",
+        date: "2026-08-20",
+        flightNumber: "AU177",
+        airline: "Aurora Airlines",
+        airlineCode: "AU",
+        gate: "B7",
+      }),
+      returnFlight: null,
+      passengers: [{ seat: 1, name: "Alex Rivera", passport: "X1234567" }],
+      contact: { email: "test@aerolane.dev", phone: "(555) 010-2020" },
+      total: 189,
+      seatAssignment: "14C",
+      boardingGroup: "3",
+    },
+    {
+      confirmationCode: "ALSEED3",
+      bookedAt: "2026-04-01T11:45:00.000Z",
+      bookedBy: "test@aerolane.dev",
+      status: "cancelled",
+      outbound: seedFlight({
+        from: "MIA",
+        to: "BOS",
+        date: "2026-06-02",
+        flightNumber: "CW309",
+        airline: "Continental Wing",
+        airlineCode: "CW",
+        gate: "A4",
+      }),
+      returnFlight: seedFlight({
+        from: "BOS",
+        to: "MIA",
+        date: "2026-06-09",
+        flightNumber: "CW310",
+        airline: "Continental Wing",
+        airlineCode: "CW",
+        departTime: "20:10",
+        arriveTime: "23:15",
+      }),
+      passengers: [{ seat: 1, name: "Alex Rivera", passport: "X1234567" }],
+      contact: { email: "test@aerolane.dev", phone: "(555) 010-2020" },
+      total: 356,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+  ]);
+}
+seedBookings();
+
+function parseCookies(req) {
+  const header = req.headers.cookie;
+  const cookies = {};
+  if (!header) return cookies;
+  header.split(";").forEach((pair) => {
+    const idx = pair.indexOf("=");
+    if (idx === -1) return;
+    const key = pair.slice(0, idx).trim();
+    const val = decodeURIComponent(pair.slice(idx + 1).trim());
+    cookies[key] = val;
+  });
+  return cookies;
+}
+
+function getSession(req) {
+  const token = parseCookies(req)[SESSION_COOKIE];
+  if (!token) return null;
+  const session = sessions.get(token);
+  if (!session) return null;
+  if (session.expiresAt < Date.now()) {
+    sessions.delete(token);
+    return null;
+  }
+  return session;
+}
+
+function requireSessionOr401(req, res) {
+  const session = getSession(req);
+  if (!session) {
+    res.status(401).json({ error: "Please sign in to view this." });
+    return null;
+  }
+  return session;
+}
+
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body || {};
+  const delay = 500 + Math.random() * 300;
+
+  setTimeout(() => {
+    const user = USERS.find(
+      (u) => u.email.toLowerCase() === String(email || "").toLowerCase(),
+    );
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: "Incorrect email or password." });
+    }
+    if (user.status === "locked") {
+      return res
+        .status(423)
+        .json({
+          error: "This account is locked. Contact support to regain access.",
+        });
+    }
+
+    const token = crypto.randomBytes(24).toString("hex");
+    sessions.set(token, {
+      email: user.email,
+      name: user.name,
+      expiresAt: Date.now() + SESSION_TTL_MS,
+    });
+
+    res.setHeader(
+      "Set-Cookie",
+      `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${SESSION_TTL_MS / 1000}`,
+    );
+    res.json({ email: user.email, name: user.name });
+  }, delay);
+});
+
+app.post("/api/logout", (req, res) => {
+  const token = parseCookies(req)[SESSION_COOKIE];
+  if (token) sessions.delete(token);
+  res.setHeader(
+    "Set-Cookie",
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`,
+  );
+  res.json({ ok: true });
+});
+
+app.get("/api/me", (req, res) => {
+  const session = getSession(req);
+  if (!session) return res.status(401).json({ error: "Not signed in." });
+  const user = findUserByEmail(session.email);
+  if (!user) return res.status(401).json({ error: "Not signed in." });
+  res.json({
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+    dob: user.dob,
+    passport: user.passport,
+  });
+});
+
+app.patch("/api/me", (req, res) => {
+  const session = requireSessionOr401(req, res);
+  if (!session) return;
+  const user = findUserByEmail(session.email);
+  if (!user) return res.status(401).json({ error: "Not signed in." });
+
+  const { name, phone, dob, passport } = req.body || {};
+  if (name !== undefined && !String(name).trim()) {
+    return res.status(400).json({ error: "Full name cannot be empty." });
+  }
+
+  if (name !== undefined) user.name = String(name).trim();
+  if (phone !== undefined) user.phone = String(phone).trim();
+  if (dob !== undefined) user.dob = String(dob).trim();
+  if (passport !== undefined) user.passport = String(passport).trim();
+
+  // Keep the session's cached name in sync so the header greeting updates immediately.
+  session.name = user.name;
+
+  res.json({
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+    dob: user.dob,
+    passport: user.passport,
+  });
+});
+
+const AIRLINES = [
+  { code: "SB", name: "SkyBridge Air" },
+  { code: "AU", name: "Aurora Airlines" },
+  { code: "CW", name: "Continental Wing" },
+  { code: "NS", name: "Northern Star Air" },
+  { code: "PC", name: "Pacific Crest Airways" },
+];
+
+const CABINS = ["economy", "premium", "business"];
+
+// --- deterministic PRNG so the same search always returns the same results ---
+function seededRandom(seedStr) {
+  let seed = 0;
+  for (let i = 0; i < seedStr.length; i++) {
+    seed = (seed * 31 + seedStr.charCodeAt(i)) >>> 0;
+  }
+  return function () {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+}
+
+function minutesToClock(mins) {
+  const h = Math.floor((mins % 1440) / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function generateFlights(from, to, date, cabin) {
+  const rand = seededRandom(`${from}-${to}-${date}-${cabin || "economy"}`);
+  const count = 4 + Math.floor(rand() * 4); // 4-7 flights
+  const flights = [];
+
+  for (let i = 0; i < count; i++) {
+    const airline = AIRLINES[Math.floor(rand() * AIRLINES.length)];
+    const flightNumber = `${airline.code}${100 + Math.floor(rand() * 899)}`;
+    const departMinutes = Math.floor(rand() * 1380);
+    const durationMinutes = 90 + Math.floor(rand() * 480);
+    const stops = rand() < 0.45 ? 0 : rand() < 0.8 ? 1 : 2;
+    const basePrice = 89 + Math.floor(rand() * 650);
+    const cabinMultiplier =
+      cabin === "business" ? 3.4 : cabin === "premium" ? 1.7 : 1;
+    const price = Math.round(basePrice * cabinMultiplier);
+    const stopCities = [];
+    for (let s = 0; s < stops; s++) {
+      const pool = airports.filter((a) => a.code !== from && a.code !== to);
+      stopCities.push(pool[Math.floor(rand() * pool.length)].code);
+    }
+
+    flights.push({
+      id: `${date}-${from}-${to}-${flightNumber}-${i}`,
+      airline: airline.name,
+      airlineCode: airline.code,
+      flightNumber,
+      from,
+      to,
+      date,
+      departTime: minutesToClock(departMinutes),
+      arriveTime: minutesToClock(departMinutes + durationMinutes),
+      durationMinutes,
+      stops,
+      stopCities,
+      price,
+      cabin: cabin || "economy",
+      seatsLeft: 1 + Math.floor(rand() * 9),
+      baggage: { carryOn: true, checked: cabin === "economy" ? 0 : 1 },
+      gate: `${String.fromCharCode(65 + Math.floor(rand() * 6))}${1 + Math.floor(rand() * 30)}`,
+    });
+  }
+
+  return flights;
+}
+
+app.get("/api/airports", (req, res) => {
+  const q = (req.query.q || "").toLowerCase().trim();
+  const delay = 250 + Math.random() * 200;
+  setTimeout(() => {
+    if (!q) return res.json([]);
+    const matches = airports
+      .filter(
+        (a) =>
+          a.code.toLowerCase().includes(q) ||
+          a.city.toLowerCase().includes(q) ||
+          a.name.toLowerCase().includes(q),
+      )
+      .slice(0, 8);
+    res.json(matches);
+  }, delay);
+});
+
+app.get("/api/flights", (req, res) => {
+  const { from, to, date, cabin, simulateError, slow } = req.query;
+  const delay = slow ? 3000 : 700 + Math.random() * 500;
+
+  setTimeout(() => {
+    if (simulateError) {
+      return res
+        .status(500)
+        .json({
+          error: "Search service is temporarily unavailable. Please try again.",
+        });
+    }
+    if (!from || !to || !date) {
+      return res
+        .status(400)
+        .json({ error: "from, to, and date are required." });
+    }
+    if (from === to) {
+      return res
+        .status(400)
+        .json({ error: "Origin and destination cannot be the same airport." });
+    }
+    const flights = generateFlights(from, to, date, cabin);
+    res.json({ flights, from, to, date });
+  }, delay);
+});
+
+app.post("/api/book", (req, res) => {
+  const { outbound, returnFlight, passengers, contact, payment } =
+    req.body || {};
+  const delay = 900 + Math.random() * 600;
+  const session = getSession(req);
+
+  setTimeout(() => {
+    if (
+      !outbound ||
+      !passengers ||
+      !passengers.length ||
+      !contact ||
+      !payment
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Missing required booking information." });
+    }
+    // simulate a declined card for negative-path testing
+    if (
+      payment.cardNumber &&
+      payment.cardNumber.replace(/\s/g, "").endsWith("0000")
+    ) {
+      return res
+        .status(402)
+        .json({ error: "Payment declined. Please use a different card." });
+    }
+
+    const confirmationCode =
+      "AL" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const total =
+      (outbound.price || 0) + (returnFlight ? returnFlight.price : 0);
+
+    const booking = {
+      confirmationCode,
+      bookedAt: new Date().toISOString(),
+      bookedBy: session ? session.email : "guest",
+      status: "confirmed",
+      outbound,
+      returnFlight: returnFlight || null,
+      passengers,
+      contact,
+      total: total * passengers.length,
+      seatAssignment: null,
+      boardingGroup: null,
+    };
+
+    // guest bookings aren't tied to an account, so there's nothing to save them against
+    if (session) {
+      const existing = bookingsByEmail.get(session.email) || [];
+      existing.unshift(booking);
+      bookingsByEmail.set(session.email, existing);
+    }
+
+    res.json(booking);
+  }, delay);
+});
+
+app.get("/api/bookings", (req, res) => {
+  const session = requireSessionOr401(req, res);
+  if (!session) return;
+  const bookings = bookingsByEmail.get(session.email) || [];
+  res.json({ bookings });
+});
+
+app.post("/api/bookings/:code/checkin", (req, res) => {
+  const session = requireSessionOr401(req, res);
+  if (!session) return;
+
+  const bookings = bookingsByEmail.get(session.email) || [];
+  const booking = bookings.find((b) => b.confirmationCode === req.params.code);
+  if (!booking) return res.status(404).json({ error: "Booking not found." });
+  if (booking.status === "cancelled") {
+    return res
+      .status(409)
+      .json({
+        error: "This booking has been cancelled and cannot be checked in.",
+      });
+  }
+  if (booking.status === "checked-in") {
+    return res
+      .status(409)
+      .json({ error: "This booking is already checked in." });
+  }
+
+  const row = 3 + Math.floor(Math.random() * 30);
+  const seatLetter = "ABCDEF"[Math.floor(Math.random() * 6)];
+  booking.status = "checked-in";
+  booking.seatAssignment = `${row}${seatLetter}`;
+  booking.boardingGroup = String(1 + Math.floor(Math.random() * 5));
+
+  setTimeout(() => res.json(booking), 500 + Math.random() * 300);
+});
+
+app.post("/api/bookings/:code/cancel", (req, res) => {
+  const session = requireSessionOr401(req, res);
+  if (!session) return;
+
+  const bookings = bookingsByEmail.get(session.email) || [];
+  const booking = bookings.find((b) => b.confirmationCode === req.params.code);
+  if (!booking) return res.status(404).json({ error: "Booking not found." });
+  if (booking.status === "cancelled") {
+    return res
+      .status(409)
+      .json({ error: "This booking is already cancelled." });
+  }
+
+  booking.status = "cancelled";
+  booking.seatAssignment = null;
+  booking.boardingGroup = null;
+
+  setTimeout(() => res.json(booking), 500 + Math.random() * 300);
+});
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Aerolane demo running at http://localhost:${PORT}`);
+});
