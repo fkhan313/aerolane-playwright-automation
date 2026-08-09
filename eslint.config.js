@@ -49,7 +49,7 @@ export default [
   prettierConfig,
   {
     ignores: [
-      "app/**",
+      "aerolane/**",
       "node_modules/**",
       "test-results/**",
       "playwright-report/**",

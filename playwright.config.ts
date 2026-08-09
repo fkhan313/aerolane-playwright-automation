@@ -15,7 +15,7 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   webServer: {
-    command: "npm start --prefix app",
+    command: "npm start --prefix aerolane",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
   },

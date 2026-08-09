@@ -18,7 +18,7 @@ jobs:
           node-version: 20
 
       - name: Install app dependencies
-        run: npm install --prefix app
+        run: npm install --prefix aerolane
 
       - name: Install test framework dependencies
         run: npm install
