@@ -68,15 +68,10 @@ function parseTypedDate(str) {
   return null;
 }
 
-function initDatePicker(
-  container,
-  { minDateISO, maxDateISO, label, testId, onSelect } = {},
-) {
+function initDatePicker(container, { minDateISO, maxDateISO, label, testId, onSelect } = {}) {
   const trigger = container.querySelector(".dp-trigger");
   const popover = container.querySelector(".dp-popover");
-  const min = minDateISO
-    ? new Date(minDateISO + "T00:00:00")
-    : new Date(new Date().toDateString());
+  const min = minDateISO ? new Date(minDateISO + "T00:00:00") : new Date(new Date().toDateString());
   const max = maxDateISO ? new Date(maxDateISO + "T00:00:00") : null;
   const yearStart = min.getFullYear();
   const yearEnd = max ? max.getFullYear() : min.getFullYear() + 3;
@@ -92,8 +87,7 @@ function initDatePicker(
 
   function withinBounds(dateObj) {
     return (
-      dateObj >= new Date(min.toDateString()) &&
-      (!max || dateObj <= new Date(max.toDateString()))
+      dateObj >= new Date(min.toDateString()) && (!max || dateObj <= new Date(max.toDateString()))
     );
   }
 
@@ -127,8 +121,7 @@ function initDatePicker(
     }
 
     const monthOptions = MONTH_NAMES.map(
-      (name, i) =>
-        `<option value="${i}"${i === m ? " selected" : ""}>${name}</option>`,
+      (name, i) => `<option value="${i}"${i === m ? " selected" : ""}>${name}</option>`,
     ).join("");
     let yearOptions = "";
     for (let yr = yearEnd; yr >= yearStart; yr--) {
@@ -149,20 +142,16 @@ function initDatePicker(
         ${cells}
       </div>`;
 
-    popover
-      .querySelector(`[data-testid="${testId}-prev-month"]`)
-      .addEventListener("click", (e) => {
-        e.stopPropagation();
-        view = new Date(y, m - 1, 1);
-        render();
-      });
-    popover
-      .querySelector(`[data-testid="${testId}-next-month"]`)
-      .addEventListener("click", (e) => {
-        e.stopPropagation();
-        view = new Date(y, m + 1, 1);
-        render();
-      });
+    popover.querySelector(`[data-testid="${testId}-prev-month"]`).addEventListener("click", (e) => {
+      e.stopPropagation();
+      view = new Date(y, m - 1, 1);
+      render();
+    });
+    popover.querySelector(`[data-testid="${testId}-next-month"]`).addEventListener("click", (e) => {
+      e.stopPropagation();
+      view = new Date(y, m + 1, 1);
+      render();
+    });
     const monthSelect = popover.querySelector(".dp-month-select");
     const yearSelect = popover.querySelector(".dp-year-select");
     monthSelect.addEventListener("click", (e) => e.stopPropagation());
@@ -170,10 +159,12 @@ function initDatePicker(
     monthSelect.addEventListener("change", (e) => {
       view = new Date(y, Number(e.target.value), 1);
       render();
+      popover.querySelector(".dp-month-select").focus(); // render() rebuilds the selects, losing focus
     });
     yearSelect.addEventListener("change", (e) => {
       view = new Date(Number(e.target.value), m, 1);
       render();
+      popover.querySelector(".dp-year-select").focus(); // render() rebuilds the selects, losing focus
     });
     popover.querySelectorAll(".dp-day:not(:disabled)").forEach((btn) => {
       btn.addEventListener("click", (e) => {

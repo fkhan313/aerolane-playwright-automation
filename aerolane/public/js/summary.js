@@ -8,10 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const totalPassengers = Math.max(
-    1,
-    (params.adults || 1) + (params.children || 0),
-  );
+  const totalPassengers = Math.max(1, (params.adults || 1) + (params.children || 0));
 
   // ---------- itinerary cards ----------
   function ticketStub(flight, legLabel) {
@@ -35,8 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.getElementById("itinerary-container").innerHTML =
-    ticketStub(outbound, "Outbound") +
-    (returnFlight ? ticketStub(returnFlight, "Return") : "");
+    ticketStub(outbound, "Outbound") + (returnFlight ? ticketStub(returnFlight, "Return") : "");
 
   // ---------- optional auth / guest checkout ----------
   const authChoicePanel = document.getElementById("auth-choice");
@@ -54,18 +50,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const emailInput = document.getElementById("contact-email");
     if (emailInput && !emailInput.value) emailInput.value = currentUser.email;
     const phoneInput = document.getElementById("contact-phone");
-    if (phoneInput && !phoneInput.value && currentUser.phone)
-      phoneInput.value = currentUser.phone;
+    if (phoneInput && !phoneInput.value && currentUser.phone) phoneInput.value = currentUser.phone;
   } else {
     authChoicePanel.style.display = "";
-    document
-      .getElementById("login-and-continue-btn")
-      .addEventListener("click", () => {
-        window.location.href = `/login.html?redirect=${encodeURIComponent("/summary.html")}`;
-      });
-    document
-      .getElementById("continue-as-guest-btn")
-      .addEventListener("click", revealBookingForm);
+    document.getElementById("login-and-continue-btn").addEventListener("click", () => {
+      window.location.href = `/login.html?redirect=${encodeURIComponent("/summary.html")}`;
+    });
+    document.getElementById("continue-as-guest-btn").addEventListener("click", revealBookingForm);
   }
 
   // ---------- passenger list (build + drag/drop reorder) ----------
@@ -109,9 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function renderPassengers() {
-    passengerListEl.innerHTML = passengerOrder
-      .map((n, i) => passengerRowHTML(i + 1, n))
-      .join("");
+    passengerListEl.innerHTML = passengerOrder.map((n, i) => passengerRowHTML(i + 1, n)).join("");
 
     passengerOrder.forEach((n) => {
       const nameInput = document.getElementById(`pax-name-${n}`);
@@ -133,52 +122,45 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!fieldWrap) return;
         let isValid = true;
         if (type === "dob") {
-          isValid =
-            !!input.value.trim() && !!parseTypedDate(input.value.trim());
+          isValid = !!input.value.trim() && !!parseTypedDate(input.value.trim());
         } else {
           isValid = input.value.trim().length > 0;
         }
         fieldWrap.classList.toggle("invalid", !isValid);
       }
 
-      nameInput.addEventListener("blur", () =>
-        validatePassengerField(nameInput, "text"),
-      );
+      nameInput.addEventListener("blur", () => validatePassengerField(nameInput, "text"));
       nameInput.addEventListener("input", () => {
         if (nameInput.value.trim()) validatePassengerField(nameInput, "text");
       });
 
-      dobInput.addEventListener("blur", () =>
-        validatePassengerField(dobInput, "dob"),
-      );
+      dobInput.addEventListener("blur", () => {
+        // defer so a click into the popover's month/year select isn't mistaken for leaving the field
+        setTimeout(() => {
+          if (field.contains(document.activeElement)) return;
+          validatePassengerField(dobInput, "dob");
+        }, 150);
+      });
       dobInput.addEventListener("input", () => {
         if (dobInput.value.trim()) validatePassengerField(dobInput, "dob");
       });
 
-      passportInput.addEventListener("blur", () =>
-        validatePassengerField(passportInput, "text"),
-      );
+      passportInput.addEventListener("blur", () => validatePassengerField(passportInput, "text"));
       passportInput.addEventListener("input", () => {
-        if (passportInput.value.trim())
-          validatePassengerField(passportInput, "text");
+        if (passportInput.value.trim()) validatePassengerField(passportInput, "text");
       });
 
       // file drop zone
-      const dropZone = document.querySelector(
-        `[data-testid="pax-file-drop-${n}"]`,
-      );
+      const dropZone = document.querySelector(`[data-testid="pax-file-drop-${n}"]`);
       const fileInput = document.getElementById(`pax-file-${n}`);
-      const fileNameEl = document.querySelector(
-        `[data-testid="pax-file-name-${n}"]`,
-      );
+      const fileNameEl = document.querySelector(`[data-testid="pax-file-name-${n}"]`);
 
       dropZone.addEventListener("click", () => fileInput.click());
       dropZone.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") fileInput.click();
       });
       fileInput.addEventListener("change", () => {
-        if (fileInput.files[0])
-          fileNameEl.textContent = fileInput.files[0].name;
+        if (fileInput.files[0]) fileNameEl.textContent = fileInput.files[0].name;
       });
       ["dragenter", "dragover"].forEach((evt) =>
         dropZone.addEventListener(evt, (e) => {
@@ -187,9 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }),
       );
       ["dragleave", "drop"].forEach((evt) =>
-        dropZone.addEventListener(evt, () =>
-          dropZone.classList.remove("dragover"),
-        ),
+        dropZone.addEventListener(evt, () => dropZone.classList.remove("dragover")),
       );
       dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
@@ -211,9 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const dobInput = document.getElementById(`pax-dob-trigger-${n}`);
       const passportInput = document.getElementById(`pax-passport-${n}`);
       const fileInput = document.getElementById(`pax-file-${n}`);
-      const fileName = document.querySelector(
-        `[data-testid="pax-file-name-${n}"]`,
-      );
+      const fileName = document.querySelector(`[data-testid="pax-file-name-${n}"]`);
 
       state[n] = {
         name: nameInput ? nameInput.value : "",
@@ -240,9 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const dobInput = document.getElementById(`pax-dob-trigger-${n}`);
       const passportInput = document.getElementById(`pax-passport-${n}`);
       const fileInput = document.getElementById(`pax-file-${n}`);
-      const fileName = document.querySelector(
-        `[data-testid="pax-file-name-${n}"]`,
-      );
+      const fileName = document.querySelector(`[data-testid="pax-file-name-${n}"]`);
 
       if (nameInput) nameInput.value = values.name;
       if (dobInput) dobInput.value = values.dob;
@@ -269,9 +245,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const badge = row.querySelector(".passenger-badge");
       if (badge) badge.textContent = `P${i + 1}`;
     });
-    passengerOrder = [
-      ...passengerListEl.querySelectorAll(".passenger-item"),
-    ].map((el) => Number(el.dataset.n));
+    passengerOrder = [...passengerListEl.querySelectorAll(".passenger-item")].map((el) =>
+      Number(el.dataset.n),
+    );
   }
 
   function wireDragReorder() {
@@ -286,9 +262,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
         row.classList.add("drag-over");
       });
-      row.addEventListener("dragleave", () =>
-        row.classList.remove("drag-over"),
-      );
+      row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
       row.addEventListener("drop", (e) => {
         e.preventDefault();
         row.classList.remove("drag-over");
@@ -296,9 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (draggedIndex === null || draggedIndex === targetIndex) return;
 
         const stateBeforeMove = snapshotPassengerState();
-        const draggedEl = passengerListEl.querySelector(
-          `[data-n="${draggedIndex}"]`,
-        );
+        const draggedEl = passengerListEl.querySelector(`[data-n="${draggedIndex}"]`);
         const allRows = [...passengerListEl.children];
         const draggedPos = allRows.indexOf(draggedEl);
         const targetPos = allRows.indexOf(row);
@@ -318,8 +290,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (currentUser) {
     // prefill only the primary passenger (P1, n=0) from the saved profile
     const nameInput = document.getElementById("pax-name-0");
-    if (nameInput && !nameInput.value && currentUser.name)
-      nameInput.value = currentUser.name;
+    if (nameInput && !nameInput.value && currentUser.name) nameInput.value = currentUser.name;
 
     const passportInput = document.getElementById("pax-passport-0");
     if (passportInput && !passportInput.value && currentUser.passport)
@@ -327,17 +298,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (currentUser.dob) {
       const dobPicker = passengerDobPickers.get(0);
-      if (dobPicker && !dobPicker.getValue())
-        dobPicker.setValue(currentUser.dob);
+      if (dobPicker && !dobPicker.getValue()) dobPicker.setValue(currentUser.dob);
     }
   }
 
   document.getElementById("passenger-count-label").textContent =
     `${totalPassengers} passenger${totalPassengers > 1 ? "s" : ""}`;
 
-  const total =
-    (outbound.price + (returnFlight ? returnFlight.price : 0)) *
-    totalPassengers;
+  const total = (outbound.price + (returnFlight ? returnFlight.price : 0)) * totalPassengers;
   document.getElementById("total-price").textContent = formatMoney(total);
 
   // ---------- input masking ----------
@@ -431,66 +399,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     return valid;
   }
 
-  document
-    .getElementById("booking-form")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!validate()) {
-        const firstInvalid = document.querySelector(".invalid");
-        if (firstInvalid)
-          firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
-        return;
+  document.getElementById("booking-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!validate()) {
+      const firstInvalid = document.querySelector(".invalid");
+      if (firstInvalid) firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Confirm booking for ${formatMoney(total)}? This charges the card on file.`,
+    );
+    if (!confirmed) return;
+
+    const payBtn = document.getElementById("pay-btn");
+    payBtn.disabled = true;
+    payBtn.textContent = "Processing\u2026";
+
+    const passengers = passengerOrder.map((n, i) => ({
+      seat: i + 1,
+      name: document.getElementById(`pax-name-${n}`).value.trim(),
+      passport: document.getElementById(`pax-passport-${n}`).value.trim(),
+    }));
+
+    const payload = {
+      outbound,
+      returnFlight: returnFlight || null,
+      passengers,
+      contact: {
+        email: document.getElementById("contact-email").value.trim(),
+        phone: document.getElementById("contact-phone").value.trim(),
+      },
+      payment: {
+        cardName: document.getElementById("card-name").value.trim(),
+        cardNumber: cardNumber.value.trim(),
+        expiry: cardExpiry.value.trim(),
+      },
+    };
+
+    try {
+      const result = await apiPost("/api/book", payload);
+      Store.set("bookingConfirmation", result);
+      window.location.href = "/confirmation.html";
+    } catch (err) {
+      payBtn.disabled = false;
+      payBtn.textContent = "Confirm & pay";
+      let banner = document.getElementById("booking-error-banner");
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "booking-error-banner";
+        banner.className = "panel";
+        banner.style.borderColor = "var(--error)";
+        banner.style.marginBottom = "16px";
+        banner.dataset.testid = "booking-error";
+        document.getElementById("booking-form").prepend(banner);
       }
-
-      const confirmed = window.confirm(
-        `Confirm booking for ${formatMoney(total)}? This charges the card on file.`,
-      );
-      if (!confirmed) return;
-
-      const payBtn = document.getElementById("pay-btn");
-      payBtn.disabled = true;
-      payBtn.textContent = "Processing\u2026";
-
-      const passengers = passengerOrder.map((n, i) => ({
-        seat: i + 1,
-        name: document.getElementById(`pax-name-${n}`).value.trim(),
-        passport: document.getElementById(`pax-passport-${n}`).value.trim(),
-      }));
-
-      const payload = {
-        outbound,
-        returnFlight: returnFlight || null,
-        passengers,
-        contact: {
-          email: document.getElementById("contact-email").value.trim(),
-          phone: document.getElementById("contact-phone").value.trim(),
-        },
-        payment: {
-          cardName: document.getElementById("card-name").value.trim(),
-          cardNumber: cardNumber.value.trim(),
-          expiry: cardExpiry.value.trim(),
-        },
-      };
-
-      try {
-        const result = await apiPost("/api/book", payload);
-        Store.set("bookingConfirmation", result);
-        window.location.href = "/confirmation.html";
-      } catch (err) {
-        payBtn.disabled = false;
-        payBtn.textContent = "Confirm & pay";
-        let banner = document.getElementById("booking-error-banner");
-        if (!banner) {
-          banner = document.createElement("div");
-          banner.id = "booking-error-banner";
-          banner.className = "panel";
-          banner.style.borderColor = "var(--error)";
-          banner.style.marginBottom = "16px";
-          banner.dataset.testid = "booking-error";
-          document.getElementById("booking-form").prepend(banner);
-        }
-        banner.innerHTML = `<h3 style="color:var(--error); margin-bottom:4px;">Booking failed</h3><p style="margin:0;">${err.message}</p>`;
-        banner.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    });
+      banner.innerHTML = `<h3 style="color:var(--error); margin-bottom:4px;">Booking failed</h3><p style="margin:0;">${err.message}</p>`;
+      banner.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
 });
