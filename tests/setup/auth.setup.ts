@@ -8,7 +8,8 @@ setup("authenticate", async ({ page}) => {
   await page.getByTestId('login-email').fill('test@aerolane.dev');
   await page.getByTestId('login-password').fill('Test1234!');
   await page.getByTestId('login-submit').click();
-  await expect(page.getByRole('button', { name: 'Alex Rivera' })).toBeVisible();
+  await page.getByTestId('auth-menu-trigger').hover(); // hovering over the user name
+  await expect(page.getByRole('menuitem', { name: 'My account' })).toBeVisible();
   await page.context().storageState({ path: authFile });
 });
 
