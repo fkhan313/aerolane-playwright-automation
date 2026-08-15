@@ -1,11 +1,11 @@
 import { test as base } from "@playwright/test";
-import { HomePage } from "../pages/HomePage";
-import { ResultsPage } from "../pages/ResultsPage";
-import { SummaryPage } from "../pages/SummaryPage";
-import { ConfirmationPage } from "../pages/ConfirmationPage";
-import { LoginPage } from "../pages/LoginPage";
-import { AccountPage } from "../pages/AccountPage";
-import { BookingsPage } from "../pages/BookingsPage";
+import { HomePage } from "../pages/home.page";
+import { ResultsPage } from "../pages/results.page";
+import { SummaryPage } from "../pages/summary.page";
+import { ConfirmationPage } from "../pages/confirmation.page";
+import { LoginPage } from "../pages/login.page";
+import { AccountPage } from "../pages/account.page";
+import { BookingsPage } from "../pages/bookings.page";
 
 interface PageFixtures {
   homePage: HomePage;

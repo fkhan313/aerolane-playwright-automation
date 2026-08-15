@@ -1,7 +1,7 @@
 import type { Locator } from "@playwright/test";
 
 // Wraps one debounced from/to airport input + its suggestion listbox.
-export class AirportAutocomplete {
+export class AirportAutocompleteComponent {
   readonly input: Locator;
   readonly suggestions: Locator;
 

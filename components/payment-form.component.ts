@@ -1,7 +1,7 @@
 import type { Page, Locator } from "@playwright/test";
 
 // Payment fields on the summary/review page, including masked card number + expiry.
-export class PaymentForm {
+export class PaymentFormComponent {
   readonly cardNumberInput: Locator;
   readonly expiryInput: Locator;
 

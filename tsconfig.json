@@ -16,7 +16,7 @@
       "@components/*": ["./components/*"],
       "@api/*": ["./api/*"],
       "@fixtures/*": ["./fixtures/*"],
-      "@test-data/*": ["./test-data/*"],
+      "@data/*": ["./data/*"],
       "@utils/*": ["./utils/*"]
     }
   },
@@ -26,7 +26,7 @@
     "components",
     "api",
     "fixtures",
-    "test-data",
+    "data",
     "utils",
     "playwright.config.ts"
   ],

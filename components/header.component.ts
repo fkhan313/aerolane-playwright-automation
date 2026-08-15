@@ -1,6 +1,6 @@
 import type { Page, Locator } from "@playwright/test";
 
-export class Header {
+export class HeaderComponent {
   readonly authMenuTrigger: Locator;
   readonly authDropdown: Locator;
 
