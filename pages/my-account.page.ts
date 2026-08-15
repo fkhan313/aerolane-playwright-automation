@@ -1,7 +1,7 @@
 import type { Page, Locator } from "@playwright/test";
 import { BasePage } from "./base.page";
 
-export class AccountPage extends BasePage {
+export class MyAccountPage extends BasePage {
   readonly profileForm: Locator;
 
   constructor(page: Page) {

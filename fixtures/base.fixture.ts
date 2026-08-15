@@ -4,7 +4,7 @@ import { ResultsPage } from "../pages/results.page";
 import { SummaryPage } from "../pages/summary.page";
 import { ConfirmationPage } from "../pages/confirmation.page";
 import { LoginPage } from "../pages/login.page";
-import { AccountPage } from "../pages/account.page";
+import { MyAccountPage } from "../pages/my-account.page";
 import { BookingsPage } from "../pages/bookings.page";
 
 interface PageFixtures {
@@ -13,7 +13,7 @@ interface PageFixtures {
   summaryPage: SummaryPage;
   confirmationPage: ConfirmationPage;
   loginPage: LoginPage;
-  accountPage: AccountPage;
+  accountPage: MyAccountPage;
   bookingsPage: BookingsPage;
 }
 
@@ -34,7 +34,7 @@ export const test = base.extend<PageFixtures>({
     await use(new LoginPage(page));
   },
   accountPage: async ({ page }, use) => {
-    await use(new AccountPage(page));
+    await use(new MyAccountPage(page));
   },
   bookingsPage: async ({ page }, use) => {
     await use(new BookingsPage(page));
