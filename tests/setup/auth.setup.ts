@@ -1,7 +1,16 @@
-import { test as setup } from "@playwright/test";
+import { test as setup, expect } from "@playwright/test";
 
-const _authFile = "playwright/.auth/user.json";
+const authFile = "playwright/.auth/user.json";
 
-setup("authenticate", async ({ page: _page }) => {
-  // TODO: log in via UI or POST /api/login and save storageState to _authFile.
+setup("authenticate", async ({ page}) => {
+  // log in via UI and save storageState to authFile.
+  await page.goto('/login.html?redirect=%2F');
+  await page.getByTestId('login-email').fill('test@aerolane.dev');
+  await page.getByTestId('login-password').fill('Test1234!');
+  await page.getByTestId('login-submit').click();
+  await expect(page.getByRole('button', { name: 'Alex Rivera' })).toBeVisible();
+  await page.context().storageState({ path: authFile });
 });
+
+
+// ToDo: log in via POST /api/login and save storageState to authFile.
