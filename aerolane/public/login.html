@@ -12,9 +12,7 @@
         <span class="brand-mark">A</span>
         <span>
           <span class="brand-name">Aerolane</span><br />
-          <span class="header-tagline"
-            >FLIGHT SEARCH & BOOKING &mdash; DEMO</span
-          >
+          <span class="header-tagline">FLIGHT SEARCH & BOOKING &mdash; DEMO</span>
         </span>
       </a>
     </header>
@@ -27,8 +25,8 @@
             <h1>Sign in</h1>
           </div>
           <p class="auth-intro">
-            You'll need to sign in to complete a booking. Searching and browsing
-            flights doesn't require an account.
+            You'll need to sign in to complete a booking. Searching and browsing flights doesn't
+            require an account.
           </p>
 
           <div class="credentials-hint" data-testid="test-credentials-hint">
@@ -47,20 +45,11 @@
           <div
             id="login-error"
             class="panel"
-            style="
-              display: none;
-              border-color: var(--error);
-              margin-bottom: 16px;
-            "
+            style="display: none; border-color: var(--error); margin-bottom: 16px"
             data-testid="login-error"
           ></div>
 
-          <form
-            class="stack"
-            id="login-form"
-            data-testid="login-form"
-            novalidate
-          >
+          <form class="stack" id="login-form" data-testid="login-form" novalidate>
             <div class="field" id="login-email-field">
               <label for="login-email">Email</label>
               <input
@@ -95,6 +84,33 @@
         </div>
       </div>
     </main>
+
+    <footer class="site-footer">
+      <div class="footer-links">
+        <a href="/terms.html" target="_blank" rel="noopener" data-testid="footer-terms-link"
+          >Terms</a
+        >
+        <a
+          href="/fare-rules.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-fare-rules-link"
+          >Fare rules</a
+        >
+        <a
+          href="/partner-baggage.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-baggage-link"
+          >Baggage policy</a
+        >
+      </div>
+      <p class="footer-disclaimer">
+        Aerolane is a fictional demo site built for test-automation practice. No real flights are
+        sold.
+      </p>
+      <p class="footer-copyright">&copy; 2026 Aerolane. All rights reserved.</p>
+    </footer>
 
     <script src="/js/state.js"></script>
     <script src="/js/auth.js"></script>

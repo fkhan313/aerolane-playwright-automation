@@ -12,9 +12,7 @@
         <span class="brand-mark">A</span>
         <span>
           <span class="brand-name">Aerolane</span><br />
-          <span class="header-tagline"
-            >FLIGHT SEARCH & BOOKING &mdash; DEMO</span
-          >
+          <span class="header-tagline">FLIGHT SEARCH & BOOKING &mdash; DEMO</span>
         </span>
       </a>
       <div class="auth-area" id="auth-area" data-testid="auth-area"></div>
@@ -26,8 +24,8 @@
           <p class="eyebrow">Premium travel, simplified</p>
           <h1>Where are you flying?</h1>
           <p>
-            A mock booking flow built to practice test automation against
-            &mdash; search, select, review, and book.
+            A mock booking flow built to practice test automation against &mdash; search, select,
+            review, and book.
           </p>
         </div>
         <div class="hero-meta" aria-label="Key details">
@@ -42,18 +40,8 @@
         </div>
       </section>
 
-      <form
-        class="panel search-panel stack"
-        id="search-form"
-        data-testid="search-form"
-        novalidate
-      >
-        <div
-          class="segmented"
-          data-testid="trip-type"
-          role="radiogroup"
-          aria-label="Trip type"
-        >
+      <form class="panel search-panel stack" id="search-form" data-testid="search-form" novalidate>
+        <div class="segmented" data-testid="trip-type" role="radiogroup" aria-label="Trip type">
           <input
             type="radio"
             name="tripType"
@@ -90,9 +78,7 @@
               data-testid="from-suggestions"
               role="listbox"
             ></ul>
-            <span class="error-text" id="from-error"
-              >Choose a departure airport.</span
-            >
+            <span class="error-text" id="from-error">Choose a departure airport.</span>
           </div>
 
           <button
@@ -121,9 +107,7 @@
               data-testid="to-suggestions"
               role="listbox"
             ></ul>
-            <span class="error-text" id="to-error"
-              >Choose a destination airport.</span
-            >
+            <span class="error-text" id="to-error">Choose a destination airport.</span>
           </div>
         </div>
 
@@ -138,9 +122,7 @@
               placeholder="Select date"
             />
             <div class="dp-popover" id="depart-popover"></div>
-            <span class="error-text" id="depart-error"
-              >Choose a departure date.</span
-            >
+            <span class="error-text" id="depart-error">Choose a departure date.</span>
           </div>
 
           <div class="field datepicker-wrap" id="return-field">
@@ -153,9 +135,7 @@
               placeholder="Select date"
             />
             <div class="dp-popover" id="return-popover"></div>
-            <span class="error-text" id="return-error"
-              >Choose a return date.</span
-            >
+            <span class="error-text" id="return-error">Choose a return date.</span>
           </div>
 
           <div class="field" id="passengers-field" style="position: relative">
@@ -186,9 +166,7 @@
                   >
                     &minus;
                   </button>
-                  <span class="stepper-count" data-testid="adults-count"
-                    >1</span
-                  >
+                  <span class="stepper-count" data-testid="adults-count">1</span>
                   <button
                     type="button"
                     class="stepper-btn"
@@ -210,9 +188,7 @@
                   >
                     &minus;
                   </button>
-                  <span class="stepper-count" data-testid="children-count"
-                    >0</span
-                  >
+                  <span class="stepper-count" data-testid="children-count">0</span>
                   <button
                     type="button"
                     class="stepper-btn"
@@ -256,8 +232,30 @@
     </main>
 
     <footer class="site-footer">
-      Aerolane is a fictional demo site built for test-automation practice. No
-      real flights are sold.
+      <div class="footer-links">
+        <a href="/terms.html" target="_blank" rel="noopener" data-testid="footer-terms-link"
+          >Terms</a
+        >
+        <a
+          href="/fare-rules.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-fare-rules-link"
+          >Fare rules</a
+        >
+        <a
+          href="/partner-baggage.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-baggage-link"
+          >Baggage policy</a
+        >
+      </div>
+      <p class="footer-disclaimer">
+        Aerolane is a fictional demo site built for test-automation practice. No real flights are
+        sold.
+      </p>
+      <p class="footer-copyright">&copy; 2026 Aerolane. All rights reserved.</p>
     </footer>
 
     <script src="/js/state.js"></script>

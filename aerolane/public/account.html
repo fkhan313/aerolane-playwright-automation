@@ -12,9 +12,7 @@
         <span class="brand-mark">A</span>
         <span>
           <span class="brand-name">Aerolane</span><br />
-          <span class="header-tagline"
-            >FLIGHT SEARCH & BOOKING &mdash; DEMO</span
-          >
+          <span class="header-tagline">FLIGHT SEARCH & BOOKING &mdash; DEMO</span>
         </span>
       </a>
       <div class="auth-area" id="auth-area" data-testid="auth-area"></div>
@@ -29,30 +27,17 @@
       </div>
 
       <p class="hint account-subtitle" style="margin: 0 0 18px">
-        These details are saved to your account and used to pre-fill your
-        booking details next time.
+        These details are saved to your account and used to pre-fill your booking details next time.
       </p>
 
-      <form
-        id="profile-form"
-        data-testid="profile-form"
-        novalidate
-        style="display: none"
-      >
+      <form id="profile-form" data-testid="profile-form" novalidate style="display: none">
         <div class="panel stack" style="margin-bottom: 16px">
           <h2>Your details</h2>
           <div class="row">
             <div class="field" id="profile-email-field">
               <label for="profile-email">Email</label>
-              <input
-                type="email"
-                id="profile-email"
-                data-testid="profile-email"
-                disabled
-              />
-              <span class="hint"
-                >Email can't be changed &mdash; it's your sign-in.</span
-              >
+              <input type="email" id="profile-email" data-testid="profile-email" disabled />
+              <span class="hint">Email can't be changed &mdash; it's your sign-in.</span>
             </div>
             <div class="field" id="profile-name-field">
               <label for="profile-name">Full name</label>
@@ -77,9 +62,7 @@
               <span class="error-text">Enter a valid phone number.</span>
             </div>
             <div class="field datepicker-wrap" id="profile-dob-field">
-              <label id="profile-dob-label" for="profile-dob-trigger"
-                >Date of birth</label
-              >
+              <label id="profile-dob-label" for="profile-dob-trigger">Date of birth</label>
               <input
                 type="text"
                 class="dp-trigger placeholder"
@@ -107,12 +90,7 @@
 
         <div
           class="panel"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
-          "
+          style="display: flex; align-items: center; justify-content: flex-end; gap: 12px"
         >
           <button
             type="submit"
@@ -127,8 +105,30 @@
     </main>
 
     <footer class="site-footer">
-      Aerolane is a fictional demo site built for test-automation practice. No
-      real flights are sold.
+      <div class="footer-links">
+        <a href="/terms.html" target="_blank" rel="noopener" data-testid="footer-terms-link"
+          >Terms</a
+        >
+        <a
+          href="/fare-rules.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-fare-rules-link"
+          >Fare rules</a
+        >
+        <a
+          href="/partner-baggage.html"
+          target="_blank"
+          rel="noopener"
+          data-testid="footer-baggage-link"
+          >Baggage policy</a
+        >
+      </div>
+      <p class="footer-disclaimer">
+        Aerolane is a fictional demo site built for test-automation practice. No real flights are
+        sold.
+      </p>
+      <p class="footer-copyright">&copy; 2026 Aerolane. All rights reserved.</p>
     </footer>
 
     <script src="/js/state.js"></script>
