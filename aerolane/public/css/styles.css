@@ -335,26 +335,21 @@ select:focus-visible,
   padding: 18px 20px;
 }
 .tier-badge {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 10px;
-  padding: 3px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border: 1px solid transparent;
 }
-.tier-badge.tier-silver {
-  color: var(--ink-600);
-  background: linear-gradient(180deg, #eef2f6, #d7dee6);
-  border-color: #b9c2cc;
+.tier-badge--silver {
+  background: #f1efe8;
+  color: #444441;
 }
-.tier-badge.tier-gold {
-  color: var(--navy-950);
-  background: linear-gradient(180deg, #fbe9bd, #f0c96a);
-  border-color: #d9a93f;
+.tier-badge--gold {
+  background: #faeeda;
+  color: #633806;
 }
 .account-toolbar {
   display: flex;

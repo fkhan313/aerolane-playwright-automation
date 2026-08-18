@@ -24,11 +24,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (user.dob) dobPicker.setValue(user.dob);
 
   // ---------- tier badge ----------
-  const tierBadge = document.getElementById("tier-badge");
-  if (user.tier && user.tier !== "basic") {
-    const tierLabel = user.tier === "gold" ? "Gold" : "Silver";
-    tierBadge.textContent = tierLabel;
-    tierBadge.classList.add(`tier-${user.tier}`);
+  const tierBadge = document.getElementById("loyalty-tier-badge");
+  const tier = user.tier;
+  if (tier === "silver" || tier === "gold") {
+    tierBadge.textContent = tier === "gold" ? "Gold member" : "Silver member";
+    tierBadge.classList.add(`tier-badge--${tier}`);
     tierBadge.style.display = "";
   }
 
