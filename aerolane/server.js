@@ -22,15 +22,37 @@ const USERS = [
     password: "Test1234!",
     name: "Alex Rivera",
     status: "active",
+    tier: "basic",
     phone: "(555) 010-2020",
     dob: "1990-05-14",
     passport: "X1234567",
+  },
+  {
+    email: "silver@aerolane.dev",
+    password: "Test1234!",
+    name: "Morgan Lee",
+    status: "active",
+    tier: "silver",
+    phone: "(555) 010-3030",
+    dob: "1985-11-02",
+    passport: "Y2345678",
+  },
+  {
+    email: "gold@aerolane.dev",
+    password: "Test1234!",
+    name: "John Carter",
+    status: "active",
+    tier: "gold",
+    phone: "(555) 010-4040",
+    dob: "1978-03-27",
+    passport: "Z3456789",
   },
   {
     email: "locked@aerolane.dev",
     password: "Test1234!",
     name: "Locked Account",
     status: "locked",
+    tier: "basic",
     phone: "",
     dob: "",
     passport: "",
@@ -38,9 +60,16 @@ const USERS = [
 ];
 
 function findUserByEmail(email) {
-  return USERS.find(
-    (u) => u.email.toLowerCase() === String(email || "").toLowerCase(),
-  );
+  return USERS.find((u) => u.email.toLowerCase() === String(email || "").toLowerCase());
+}
+
+// Tier benefit: Silver/Gold get free checked bags on economy fares.
+// Premium/business already include a bag, so the perk only applies to economy.
+function tierCheckedBags(user) {
+  if (!user) return 0;
+  if (user.tier === "gold") return 2;
+  if (user.tier === "silver") return 1;
+  return 0;
 }
 
 function seedBookings() {
@@ -142,6 +171,176 @@ function seedBookings() {
       boardingGroup: null,
     },
   ]);
+
+  bookingsByEmail.set("silver@aerolane.dev", [
+    {
+      confirmationCode: "ALSILV1",
+      bookedAt: "2026-06-18T10:30:00.000Z",
+      bookedBy: "silver@aerolane.dev",
+      status: "confirmed",
+      outbound: seedFlight({
+        from: "LAX",
+        to: "SEA",
+        date: "2026-10-02",
+        flightNumber: "PC221",
+        airline: "Pacific Crest Airways",
+        airlineCode: "PC",
+        gate: "D3",
+      }),
+      returnFlight: seedFlight({
+        from: "SEA",
+        to: "LAX",
+        date: "2026-10-09",
+        flightNumber: "PC222",
+        airline: "Pacific Crest Airways",
+        airlineCode: "PC",
+        departTime: "14:25",
+        arriveTime: "16:40",
+        gate: "A9",
+      }),
+      passengers: [{ seat: 1, name: "Morgan Lee", passport: "Y2345678" }],
+      contact: { email: "silver@aerolane.dev", phone: "(555) 010-3030" },
+      total: 312,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+    {
+      confirmationCode: "ALSILV2",
+      bookedAt: "2026-03-22T16:10:00.000Z",
+      bookedBy: "silver@aerolane.dev",
+      status: "checked-in",
+      outbound: seedFlight({
+        from: "DEN",
+        to: "PHX",
+        date: "2026-07-15",
+        flightNumber: "NS88",
+        airline: "Northern Star Air",
+        airlineCode: "NS",
+        gate: "B2",
+      }),
+      returnFlight: null,
+      passengers: [{ seat: 1, name: "Morgan Lee", passport: "Y2345678" }],
+      contact: { email: "silver@aerolane.dev", phone: "(555) 010-3030" },
+      total: 148,
+      seatAssignment: "9A",
+      boardingGroup: "2",
+    },
+  ]);
+
+  bookingsByEmail.set("gold@aerolane.dev", [
+    {
+      confirmationCode: "ALGLD1",
+      bookedAt: "2026-07-28T08:45:00.000Z",
+      bookedBy: "gold@aerolane.dev",
+      status: "confirmed",
+      outbound: seedFlight({
+        from: "JFK",
+        to: "LHR",
+        date: "2026-11-05",
+        flightNumber: "SB900",
+        cabin: "business",
+        price: 1890,
+        gate: "E7",
+      }),
+      returnFlight: seedFlight({
+        from: "LHR",
+        to: "JFK",
+        date: "2026-11-12",
+        flightNumber: "SB901",
+        cabin: "business",
+        price: 1890,
+        departTime: "11:20",
+        arriveTime: "14:05",
+        gate: "F2",
+      }),
+      passengers: [{ seat: 1, name: "John Carter", passport: "Z3456789" }],
+      contact: { email: "gold@aerolane.dev", phone: "(555) 010-4040" },
+      total: 3780,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+    {
+      confirmationCode: "ALGLD2",
+      bookedAt: "2026-05-30T13:20:00.000Z",
+      bookedBy: "gold@aerolane.dev",
+      status: "checked-in",
+      outbound: seedFlight({
+        from: "SFO",
+        to: "JFK",
+        date: "2026-08-28",
+        flightNumber: "AU188",
+        airline: "Aurora Airlines",
+        airlineCode: "AU",
+        cabin: "premium",
+        price: 640,
+        gate: "C5",
+      }),
+      returnFlight: null,
+      passengers: [{ seat: 1, name: "John Carter", passport: "Z3456789" }],
+      contact: { email: "gold@aerolane.dev", phone: "(555) 010-4040" },
+      total: 640,
+      seatAssignment: "2A",
+      boardingGroup: "1",
+    },
+    {
+      confirmationCode: "ALGLD3",
+      bookedAt: "2026-04-14T09:15:00.000Z",
+      bookedBy: "gold@aerolane.dev",
+      status: "confirmed",
+      outbound: seedFlight({
+        from: "ORD",
+        to: "MIA",
+        date: "2026-12-18",
+        flightNumber: "CW410",
+        airline: "Continental Wing",
+        airlineCode: "CW",
+        cabin: "premium",
+        price: 520,
+        gate: "B11",
+      }),
+      returnFlight: seedFlight({
+        from: "MIA",
+        to: "ORD",
+        date: "2026-12-26",
+        flightNumber: "CW411",
+        airline: "Continental Wing",
+        airlineCode: "CW",
+        cabin: "premium",
+        price: 520,
+        departTime: "18:35",
+        arriveTime: "20:50",
+        gate: "A6",
+      }),
+      passengers: [{ seat: 1, name: "John Carter", passport: "Z3456789" }],
+      contact: { email: "gold@aerolane.dev", phone: "(555) 010-4040" },
+      total: 1040,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+    {
+      confirmationCode: "ALGLD4",
+      bookedAt: "2026-02-09T15:40:00.000Z",
+      bookedBy: "gold@aerolane.dev",
+      status: "cancelled",
+      outbound: seedFlight({
+        from: "SEA",
+        to: "LAS",
+        date: "2026-03-20",
+        flightNumber: "NS120",
+        airline: "Northern Star Air",
+        airlineCode: "NS",
+        cabin: "economy",
+        price: 210,
+        gate: "C3",
+      }),
+      returnFlight: null,
+      passengers: [{ seat: 1, name: "John Carter", passport: "Z3456789" }],
+      contact: { email: "gold@aerolane.dev", phone: "(555) 010-4040" },
+      total: 210,
+      seatAssignment: null,
+      boardingGroup: null,
+    },
+  ]);
 }
 seedBookings();
 
@@ -185,9 +384,7 @@ app.post("/api/login", (req, res) => {
   const delay = 500 + Math.random() * 300;
 
   setTimeout(() => {
-    const user = USERS.find(
-      (u) => u.email.toLowerCase() === String(email || "").toLowerCase(),
-    );
+    const user = USERS.find((u) => u.email.toLowerCase() === String(email || "").toLowerCase());
     if (!user || user.password !== password) {
       return res.status(401).json({ error: "Incorrect email or password." });
     }
@@ -215,10 +412,7 @@ app.post("/api/login", (req, res) => {
 app.post("/api/logout", (req, res) => {
   const token = parseCookies(req)[SESSION_COOKIE];
   if (token) sessions.delete(token);
-  res.setHeader(
-    "Set-Cookie",
-    `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`,
-  );
+  res.setHeader("Set-Cookie", `${SESSION_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`);
   res.json({ ok: true });
 });
 
@@ -233,6 +427,7 @@ app.get("/api/me", (req, res) => {
     phone: user.phone,
     dob: user.dob,
     passport: user.passport,
+    tier: user.tier,
   });
 });
 
@@ -304,8 +499,7 @@ function generateFlights(from, to, date, cabin) {
     const durationMinutes = 90 + Math.floor(rand() * 480);
     const stops = rand() < 0.45 ? 0 : rand() < 0.8 ? 1 : 2;
     const basePrice = 89 + Math.floor(rand() * 650);
-    const cabinMultiplier =
-      cabin === "business" ? 3.4 : cabin === "premium" ? 1.7 : 1;
+    const cabinMultiplier = cabin === "business" ? 3.4 : cabin === "premium" ? 1.7 : 1;
     const price = Math.round(basePrice * cabinMultiplier);
     const stopCities = [];
     for (let s = 0; s < stops; s++) {
@@ -365,14 +559,10 @@ app.get("/api/flights", (req, res) => {
       });
     }
     if (!from || !to || !date) {
-      return res
-        .status(400)
-        .json({ error: "from, to, and date are required." });
+      return res.status(400).json({ error: "from, to, and date are required." });
     }
     if (from === to) {
-      return res
-        .status(400)
-        .json({ error: "Origin and destination cannot be the same airport." });
+      return res.status(400).json({ error: "Origin and destination cannot be the same airport." });
     }
     const flights = generateFlights(from, to, date, cabin);
     res.json({ flights, from, to, date });
@@ -380,37 +570,21 @@ app.get("/api/flights", (req, res) => {
 });
 
 app.post("/api/book", (req, res) => {
-  const { outbound, returnFlight, passengers, contact, payment } =
-    req.body || {};
+  const { outbound, returnFlight, passengers, contact, payment } = req.body || {};
   const delay = 900 + Math.random() * 600;
   const session = getSession(req);
 
   setTimeout(() => {
-    if (
-      !outbound ||
-      !passengers ||
-      !passengers.length ||
-      !contact ||
-      !payment
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Missing required booking information." });
+    if (!outbound || !passengers || !passengers.length || !contact || !payment) {
+      return res.status(400).json({ error: "Missing required booking information." });
     }
     // simulate a declined card for negative-path testing
-    if (
-      payment.cardNumber &&
-      payment.cardNumber.replace(/\s/g, "").endsWith("0000")
-    ) {
-      return res
-        .status(402)
-        .json({ error: "Payment declined. Please use a different card." });
+    if (payment.cardNumber && payment.cardNumber.replace(/\s/g, "").endsWith("0000")) {
+      return res.status(402).json({ error: "Payment declined. Please use a different card." });
     }
 
-    const confirmationCode =
-      "AL" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const total =
-      (outbound.price || 0) + (returnFlight ? returnFlight.price : 0);
+    const confirmationCode = "AL" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const total = (outbound.price || 0) + (returnFlight ? returnFlight.price : 0);
 
     const booking = {
       confirmationCode,
@@ -425,6 +599,14 @@ app.post("/api/book", (req, res) => {
       seatAssignment: null,
       boardingGroup: null,
     };
+
+    // Stamp the tier baggage benefit so the confirmation page can show it.
+    // Only applies to economy fares (premium/business already include a bag).
+    const user = session ? findUserByEmail(session.email) : null;
+    const bags = outbound.cabin === "economy" ? tierCheckedBags(user) : 0;
+    if (bags > 0) {
+      booking.tierBenefit = { bags, tier: user.tier };
+    }
 
     // guest bookings aren't tied to an account, so there's nothing to save them against
     if (session) {
@@ -457,9 +639,7 @@ app.post("/api/bookings/:code/checkin", (req, res) => {
     });
   }
   if (booking.status === "checked-in") {
-    return res
-      .status(409)
-      .json({ error: "This booking is already checked in." });
+    return res.status(409).json({ error: "This booking is already checked in." });
   }
 
   const row = 3 + Math.floor(Math.random() * 30);
@@ -479,9 +659,7 @@ app.post("/api/bookings/:code/cancel", (req, res) => {
   const booking = bookings.find((b) => b.confirmationCode === req.params.code);
   if (!booking) return res.status(404).json({ error: "Booking not found." });
   if (booking.status === "cancelled") {
-    return res
-      .status(409)
-      .json({ error: "This booking is already cancelled." });
+    return res.status(409).json({ error: "This booking is already cancelled." });
   }
 
   booking.status = "cancelled";

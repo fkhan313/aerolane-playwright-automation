@@ -39,6 +39,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bookingForm = document.getElementById("booking-form");
   const currentUser = await fetchCurrentUser();
 
+  // ---------- tier baggage benefit ----------
+  // Silver/Gold get free checked bags on economy fares. Premium/business
+  // already include a bag, so the perk only shows for economy.
+  const tierBenefitEl = document.getElementById("tier-benefit");
+  const tier = currentUser?.tier;
+  const bags = tier === "gold" ? 2 : tier === "silver" ? 1 : 0;
+  if (outbound.cabin === "economy" && bags > 0) {
+    const tierLabel = tier === "gold" ? "Gold" : "Silver";
+    tierBenefitEl.style.display = "";
+    tierBenefitEl.innerHTML = `
+      <p style="margin:0; display:flex; align-items:center; gap:8px;">
+        <span aria-hidden="true">&#128176;</span>
+        <span>
+          <strong>${bags} free checked bag${bags > 1 ? "s" : ""} included</strong>
+          &mdash; ${tierLabel} member benefit on this economy fare.
+        </span>
+      </p>`;
+  }
+
   function revealBookingForm() {
     authChoicePanel.style.display = "none";
     bookingForm.style.display = "";

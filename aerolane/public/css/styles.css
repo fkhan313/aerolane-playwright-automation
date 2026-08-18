@@ -334,6 +334,28 @@ select:focus-visible,
   margin-bottom: 10px;
   padding: 18px 20px;
 }
+.tier-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 10px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.tier-badge.tier-silver {
+  color: var(--ink-600);
+  background: linear-gradient(180deg, #eef2f6, #d7dee6);
+  border-color: #b9c2cc;
+}
+.tier-badge.tier-gold {
+  color: var(--navy-950);
+  background: linear-gradient(180deg, #fbe9bd, #f0c96a);
+  border-color: #d9a93f;
+}
 .account-toolbar {
   display: flex;
   align-items: center;
@@ -1317,6 +1339,10 @@ input[type="range"] {
 }
 .panel .hint {
   margin-bottom: 10px;
+}
+/* space out stacked rows inside a panel (e.g. payment, contact details) */
+.panel .row + .row {
+  margin-top: 14px;
 }
 
 /* confirmation */

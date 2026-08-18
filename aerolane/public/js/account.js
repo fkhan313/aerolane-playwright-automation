@@ -23,6 +23,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   passportInput.value = user.passport || "";
   if (user.dob) dobPicker.setValue(user.dob);
 
+  // ---------- tier badge ----------
+  const tierBadge = document.getElementById("tier-badge");
+  if (user.tier && user.tier !== "basic") {
+    const tierLabel = user.tier === "gold" ? "Gold" : "Silver";
+    tierBadge.textContent = tierLabel;
+    tierBadge.classList.add(`tier-${user.tier}`);
+    tierBadge.style.display = "";
+  }
+
   form.style.display = "";
 
   function setError(fieldId, hasError) {
@@ -38,14 +47,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!nameOk) valid = false;
 
     const phoneValue = phoneInput.value.trim();
-    const phoneOk =
-      phoneValue === "" || phoneValue.replace(/\D/g, "").length >= 7;
+    const phoneOk = phoneValue === "" || phoneValue.replace(/\D/g, "").length >= 7;
     setError("profile-phone-field", !phoneOk);
     if (!phoneOk) valid = false;
 
-    const dobTyped = document
-      .getElementById("profile-dob-trigger")
-      .value.trim();
+    const dobTyped = document.getElementById("profile-dob-trigger").value.trim();
     const dobOk = dobTyped === "" || !!dobPicker.getValue();
     dobField.classList.toggle("invalid", !dobOk);
     if (!dobOk) valid = false;
