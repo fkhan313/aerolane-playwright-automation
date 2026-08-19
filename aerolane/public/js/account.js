@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tierBadge = document.getElementById("loyalty-tier-badge");
   const tier = user.tier;
   if (tier === "silver" || tier === "gold") {
-    tierBadge.textContent = tier === "gold" ? "Gold member" : "Silver member";
+    const tierLabel = tier === "gold" ? "Gold member" : "Silver member";
+    tierBadge.textContent = `\u2605 ${tierLabel}`;
     tierBadge.classList.add(`tier-badge--${tier}`);
     tierBadge.style.display = "";
   }
