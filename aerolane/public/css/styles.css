@@ -608,6 +608,38 @@ table.bookings-table tr.is-cancelled {
   display: block;
 }
 
+/* ---------- Form group (labeled contenteditable) ---------- */
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-600);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.special-requests-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.8em 0.9em;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink-900);
+  font-family: inherit;
+  box-shadow: inset 0 1px 2px rgba(17, 24, 39, 0.03);
+}
+.special-requests-input:focus {
+  border-color: rgba(30, 44, 79, 0.75);
+  box-shadow: 0 0 0 4px rgba(21, 97, 255, 0.08);
+}
+.special-requests-input:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-400);
+  pointer-events: none;
+}
+
 /* ---------- Trip type segmented control ---------- */
 .segmented {
   display: inline-flex;

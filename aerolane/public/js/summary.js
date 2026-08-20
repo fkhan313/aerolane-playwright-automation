@@ -441,10 +441,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       passport: document.getElementById(`pax-passport-${n}`).value.trim(),
     }));
 
+    const specialRequestsEl = document.getElementById("special-requests");
+    const specialRequests = specialRequestsEl ? specialRequestsEl.textContent.trim() : "";
     const payload = {
       outbound,
       returnFlight: returnFlight || null,
       passengers,
+      specialRequests: specialRequests || null,
       contact: {
         email: document.getElementById("contact-email").value.trim(),
         phone: document.getElementById("contact-phone").value.trim(),
