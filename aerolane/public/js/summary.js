@@ -84,6 +84,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   let draggedIndex = null;
   const passengerDobPickers = new Map();
 
+  // ---------- special requests character counter ----------
+  const SPECIAL_REQUESTS_MAX = 200;
+  const specialRequestsEl = document.getElementById("special-requests");
+  const specialRequestsCount = document.getElementById("special-requests-count");
+  if (specialRequestsEl && specialRequestsCount) {
+    const updateCount = () => {
+      const len = specialRequestsEl.textContent.trim().length;
+      specialRequestsCount.textContent = `${len} / ${SPECIAL_REQUESTS_MAX} characters`;
+      specialRequestsCount.style.color = len > SPECIAL_REQUESTS_MAX ? "var(--error)" : "";
+    };
+    specialRequestsEl.addEventListener("input", updateCount);
+    updateCount();
+  }
+
   function passengerRowHTML(seatNumber, n) {
     return `
       <div class="passenger-item" draggable="true" data-n="${n}" data-testid="passenger-row-${n}">
@@ -414,6 +428,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     termsError.style.display = terms.checked ? "none" : "block";
     termsError.classList.toggle("invalid", !terms.checked);
     if (!terms.checked) valid = false;
+
+    const specialRequestsEl = document.getElementById("special-requests");
+    const specialRequestsText = specialRequestsEl ? specialRequestsEl.textContent.trim() : "";
+    if (specialRequestsText.length > SPECIAL_REQUESTS_MAX) {
+      specialRequestsEl.classList.add("invalid");
+      valid = false;
+    } else if (specialRequestsEl) {
+      specialRequestsEl.classList.remove("invalid");
+    }
 
     return valid;
   }

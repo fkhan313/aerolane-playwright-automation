@@ -92,6 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("confirm-total").textContent = formatMoney(booking.total);
 
+  // ---------- special requests (optional, echoed back from the booking) ----------
+  const specialRequestsPanel = document.getElementById("special-requests-panel");
+  if (booking.specialRequests) {
+    specialRequestsPanel.style.display = "";
+    document.getElementById("special-requests-text").textContent = booking.specialRequests;
+  }
+
   // ---------- download e-ticket ----------
   document.getElementById("download-btn").addEventListener("click", () => {
     const lines = [

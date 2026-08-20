@@ -622,6 +622,11 @@ table.bookings-table tr.is-cancelled {
 .special-requests-input {
   width: 100%;
   min-height: 80px;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
   padding: 0.8em 0.9em;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -639,6 +644,10 @@ table.bookings-table tr.is-cancelled {
   content: attr(data-placeholder);
   color: var(--ink-400);
   pointer-events: none;
+}
+.special-requests-input.invalid {
+  border-color: var(--error);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
 }
 
 /* ---------- Trip type segmented control ---------- */

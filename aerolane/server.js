@@ -570,13 +570,17 @@ app.get("/api/flights", (req, res) => {
 });
 
 app.post("/api/book", (req, res) => {
-  const { outbound, returnFlight, passengers, contact, payment } = req.body || {};
+  const { outbound, returnFlight, passengers, contact, payment, specialRequests } = req.body || {};
   const delay = 900 + Math.random() * 600;
   const session = getSession(req);
 
   setTimeout(() => {
     if (!outbound || !passengers || !passengers.length || !contact || !payment) {
       return res.status(400).json({ error: "Missing required booking information." });
+    }
+    // special requests are optional but capped at 200 characters
+    if (specialRequests && specialRequests.trim().length > 200) {
+      return res.status(400).json({ error: "Special requests must be 200 characters or fewer." });
     }
     // simulate a declined card for negative-path testing
     if (payment.cardNumber && payment.cardNumber.replace(/\s/g, "").endsWith("0000")) {
@@ -595,6 +599,7 @@ app.post("/api/book", (req, res) => {
       returnFlight: returnFlight || null,
       passengers,
       contact,
+      specialRequests: specialRequests || null,
       total: total * passengers.length,
       seatAssignment: null,
       boardingGroup: null,
