@@ -38,6 +38,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ---------- payment input masking ----------
   cardNumberInput.addEventListener("input", () => {
+    // If the field holds a masked saved card, clear it on the first edit so
+    // the user can enter a fresh number instead of fighting the placeholder
+    // dots (which would otherwise all vanish on the first backspace).
+    if (cardNumberInput.value.includes("\u2022")) {
+      cardNumberInput.value = "";
+      return;
+    }
     const digits = cardNumberInput.value.replace(/\D/g, "").slice(0, 16);
     cardNumberInput.value = digits.replace(/(.{4})/g, "$1 ").trim();
   });
