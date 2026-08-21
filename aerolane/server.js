@@ -26,6 +26,7 @@ const USERS = [
     phone: "(555) 010-2020",
     dob: "1990-05-14",
     passport: "X1234567",
+    payment: { cardName: "Alex Rivera", last4: "1111", expiry: "12/28" },
   },
   {
     email: "silver@aerolane.dev",
@@ -36,6 +37,7 @@ const USERS = [
     phone: "(555) 010-3030",
     dob: "1985-11-02",
     passport: "Y2345678",
+    payment: { cardName: "Morgan Lee", last4: "2222", expiry: "08/27" },
   },
   {
     email: "gold@aerolane.dev",
@@ -46,6 +48,7 @@ const USERS = [
     phone: "(555) 010-4040",
     dob: "1978-03-27",
     passport: "Z3456789",
+    payment: { cardName: "John Carter", last4: "3333", expiry: "03/29" },
   },
   {
     email: "locked@aerolane.dev",
@@ -428,6 +431,7 @@ app.get("/api/me", (req, res) => {
     dob: user.dob,
     passport: user.passport,
     tier: user.tier,
+    payment: user.payment,
   });
 });
 
@@ -437,7 +441,7 @@ app.patch("/api/me", (req, res) => {
   const user = findUserByEmail(session.email);
   if (!user) return res.status(401).json({ error: "Not signed in." });
 
-  const { name, phone, dob, passport } = req.body || {};
+  const { name, phone, dob, passport, payment } = req.body || {};
   if (name !== undefined && !String(name).trim()) {
     return res.status(400).json({ error: "Full name cannot be empty." });
   }
@@ -446,6 +450,7 @@ app.patch("/api/me", (req, res) => {
   if (phone !== undefined) user.phone = String(phone).trim();
   if (dob !== undefined) user.dob = String(dob).trim();
   if (passport !== undefined) user.passport = String(passport).trim();
+  if (payment !== undefined) user.payment = payment;
 
   // Keep the session's cached name in sync so the header greeting updates immediately.
   session.name = user.name;

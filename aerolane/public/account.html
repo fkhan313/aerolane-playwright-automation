@@ -94,6 +94,44 @@
           </div>
         </div>
 
+        <div class="panel stack" style="margin-bottom: 16px">
+          <h2>Payment details</h2>
+          <div class="row">
+            <div class="field" id="card-name-field">
+              <label for="card-name">Name on card</label>
+              <input
+                type="text"
+                id="card-name"
+                data-testid="card-name"
+                placeholder="As shown on card"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field" id="card-number-field">
+              <label for="card-number">Card number</label>
+              <input
+                type="text"
+                id="card-number"
+                data-testid="card-number"
+                placeholder="1234 5678 9012 3456"
+                inputmode="numeric"
+                maxlength="19"
+              />
+            </div>
+            <div class="field" id="card-expiry-field" style="max-width: 140px">
+              <label for="card-expiry">Expiry</label>
+              <input
+                type="text"
+                id="card-expiry"
+                data-testid="card-expiry"
+                placeholder="MM/YY"
+                maxlength="5"
+              />
+            </div>
+          </div>
+        </div>
+
         <div
           class="panel"
           style="display: flex; align-items: center; justify-content: flex-end; gap: 12px"

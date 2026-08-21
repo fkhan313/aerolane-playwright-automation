@@ -70,6 +70,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (emailInput && !emailInput.value) emailInput.value = currentUser.email;
     const phoneInput = document.getElementById("contact-phone");
     if (phoneInput && !phoneInput.value && currentUser.phone) phoneInput.value = currentUser.phone;
+
+    // prefill saved (masked) payment details; CVC is intentionally left blank
+    if (currentUser.payment) {
+      const cardName = document.getElementById("card-name");
+      const cardNumber = document.getElementById("card-number");
+      const cardExpiry = document.getElementById("card-expiry");
+      if (cardName && !cardName.value) cardName.value = currentUser.payment.cardName || "";
+      if (cardNumber && !cardNumber.value && currentUser.payment.last4)
+        cardNumber.value = `\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ${currentUser.payment.last4}`;
+      if (cardExpiry && !cardExpiry.value) cardExpiry.value = currentUser.payment.expiry || "";
+    }
   } else {
     authChoicePanel.style.display = "";
     document.getElementById("login-and-continue-btn").addEventListener("click", () => {
@@ -411,7 +422,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     setError("card-name-field", !cardNameOk);
     if (!cardNameOk) valid = false;
 
-    const cardNumOk = cardNumber.value.replace(/\D/g, "").length === 16;
+    const cardNumOk =
+      cardNumber.value.includes("\u2022") || cardNumber.value.replace(/\D/g, "").length === 16;
     setError("card-number-field", !cardNumOk);
     if (!cardNumOk) valid = false;
 

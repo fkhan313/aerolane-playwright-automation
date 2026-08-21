@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dobField = document.getElementById("profile-dob-field");
   const saveBtn = document.getElementById("save-profile-btn");
 
+  const cardNameInput = document.getElementById("card-name");
+  const cardNumberInput = document.getElementById("card-number");
+  const cardExpiryInput = document.getElementById("card-expiry");
+
   const dobPicker = initDatePicker(dobField, {
     minDateISO: "1920-01-01",
     maxDateISO: todayISO(),
@@ -22,6 +26,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   phoneInput.value = user.phone || "";
   passportInput.value = user.passport || "";
   if (user.dob) dobPicker.setValue(user.dob);
+
+  // ---------- payment prefill (masked) ----------
+  if (user.payment) {
+    cardNameInput.value = user.payment.cardName || "";
+    cardNumberInput.value = user.payment.last4
+      ? `\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ${user.payment.last4}`
+      : "";
+    cardExpiryInput.value = user.payment.expiry || "";
+  }
+
+  // ---------- payment input masking ----------
+  cardNumberInput.addEventListener("input", () => {
+    const digits = cardNumberInput.value.replace(/\D/g, "").slice(0, 16);
+    cardNumberInput.value = digits.replace(/(.{4})/g, "$1 ").trim();
+  });
+  cardExpiryInput.addEventListener("input", () => {
+    let digits = cardExpiryInput.value.replace(/\D/g, "").slice(0, 4);
+    if (digits.length >= 3) digits = digits.slice(0, 2) + "/" + digits.slice(2);
+    cardExpiryInput.value = digits;
+  });
 
   // ---------- tier badge ----------
   const tierBadge = document.getElementById("loyalty-tier-badge");
@@ -67,11 +91,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveBtn.disabled = true;
     saveBtn.textContent = "Saving\u2026";
     try {
+      const cardDigits = cardNumberInput.value.replace(/\D/g, "");
+      const last4 = cardDigits.length >= 4 ? cardDigits.slice(-4) : user.payment?.last4 || "";
       await apiPatch("/api/me", {
         name: nameInput.value.trim(),
         phone: phoneInput.value.trim(),
         dob: dobPicker.getValue() || "",
         passport: passportInput.value.trim(),
+        payment: {
+          cardName: cardNameInput.value.trim(),
+          last4,
+          expiry: cardExpiryInput.value.trim(),
+        },
       });
       await renderAuthSlot(); // refresh header name after a save
       showToast("Account details saved.", "profile-saved-toast");
