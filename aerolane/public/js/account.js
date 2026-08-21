@@ -104,6 +104,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           expiry: cardExpiryInput.value.trim(),
         },
       });
+      // Re-mask the card number now that only the last 4 digits are saved,
+      // so the full number isn't left visible in the field after saving.
+      cardNumberInput.value = last4
+        ? `\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ${last4}`
+        : "";
       await renderAuthSlot(); // refresh header name after a save
       showToast("Account details saved.", "profile-saved-toast");
     } catch (err) {
