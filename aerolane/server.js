@@ -75,6 +75,16 @@ function tierCheckedBags(user) {
   return 0;
 }
 
+// 6-character uppercase alphanumeric confirmation code (e.g. "K7Q2MZ")
+const CONFIRMATION_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+function randomConfirmationCode() {
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += CONFIRMATION_ALPHABET[Math.floor(Math.random() * CONFIRMATION_ALPHABET.length)];
+  }
+  return code;
+}
+
 function seedBookings() {
   const seedFlight = (overrides) => ({
     airline: "SkyBridge Air",
@@ -98,7 +108,7 @@ function seedBookings() {
 
   bookingsByEmail.set("test@aerolane.dev", [
     {
-      confirmationCode: "ALSEED1",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-07-02T14:20:00.000Z",
       bookedBy: "test@aerolane.dev",
       status: "confirmed",
@@ -123,7 +133,7 @@ function seedBookings() {
       boardingGroup: null,
     },
     {
-      confirmationCode: "ALSEED2",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-05-11T09:05:00.000Z",
       bookedBy: "test@aerolane.dev",
       status: "checked-in",
@@ -144,7 +154,7 @@ function seedBookings() {
       boardingGroup: "3",
     },
     {
-      confirmationCode: "ALSEED3",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-04-01T11:45:00.000Z",
       bookedBy: "test@aerolane.dev",
       status: "cancelled",
@@ -177,7 +187,7 @@ function seedBookings() {
 
   bookingsByEmail.set("silver@aerolane.dev", [
     {
-      confirmationCode: "ALSILV1",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-06-18T10:30:00.000Z",
       bookedBy: "silver@aerolane.dev",
       status: "confirmed",
@@ -208,7 +218,7 @@ function seedBookings() {
       boardingGroup: null,
     },
     {
-      confirmationCode: "ALSILV2",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-03-22T16:10:00.000Z",
       bookedBy: "silver@aerolane.dev",
       status: "checked-in",
@@ -232,7 +242,7 @@ function seedBookings() {
 
   bookingsByEmail.set("gold@aerolane.dev", [
     {
-      confirmationCode: "ALGLD1",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-07-28T08:45:00.000Z",
       bookedBy: "gold@aerolane.dev",
       status: "confirmed",
@@ -263,7 +273,7 @@ function seedBookings() {
       boardingGroup: null,
     },
     {
-      confirmationCode: "ALGLD2",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-05-30T13:20:00.000Z",
       bookedBy: "gold@aerolane.dev",
       status: "checked-in",
@@ -286,7 +296,7 @@ function seedBookings() {
       boardingGroup: "1",
     },
     {
-      confirmationCode: "ALGLD3",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-04-14T09:15:00.000Z",
       bookedBy: "gold@aerolane.dev",
       status: "confirmed",
@@ -321,7 +331,7 @@ function seedBookings() {
       boardingGroup: null,
     },
     {
-      confirmationCode: "ALGLD4",
+      confirmationCode: randomConfirmationCode(),
       bookedAt: "2026-02-09T15:40:00.000Z",
       bookedBy: "gold@aerolane.dev",
       status: "cancelled",
@@ -592,7 +602,7 @@ app.post("/api/book", (req, res) => {
       return res.status(402).json({ error: "Payment declined. Please use a different card." });
     }
 
-    const confirmationCode = "AL" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const confirmationCode = randomConfirmationCode();
     const total = (outbound.price || 0) + (returnFlight ? returnFlight.price : 0);
 
     const booking = {
